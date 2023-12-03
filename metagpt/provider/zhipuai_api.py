@@ -50,12 +50,7 @@ class ZhiPuAIGPTAPI(BaseGPTAPI):
         openai.api_key = zhipuai.api_key  # due to use openai sdk, set the api_key but it will't be used.
 
     def _const_kwargs(self, messages: list[dict]) -> dict:
-        kwargs = {
-            "model": self.model,
-            "prompt": messages,
-            "temperature": 0.3
-        }
-        return kwargs
+        return {"model": self.model, "prompt": messages, "temperature": 0.3}
 
     def _update_costs(self, usage: dict):
         """ update each request's token cost """
@@ -97,7 +92,10 @@ class ZhiPuAIGPTAPI(BaseGPTAPI):
                 content = event.data
                 collected_content.append(content)
                 print(content, end="")
-            elif event.event == ZhiPuEvent.ERROR.value or event.event == ZhiPuEvent.INTERRUPTED.value:
+            elif event.event in [
+                ZhiPuEvent.ERROR.value,
+                ZhiPuEvent.INTERRUPTED.value,
+            ]:
                 content = event.data
                 logger.error(f"event error: {content}", end="")
                 collected_content.append([content])
@@ -121,8 +119,7 @@ class ZhiPuAIGPTAPI(BaseGPTAPI):
                 print(f"zhipuapi else event: {event.data}", end="")
 
         self._update_costs(usage)
-        full_content = "".join(collected_content)
-        return full_content
+        return "".join(collected_content)
 
     @retry(
         stop=stop_after_attempt(3),

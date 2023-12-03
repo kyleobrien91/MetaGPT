@@ -17,8 +17,7 @@ from metagpt.logs import logger
 def parse_code(rsp):
     pattern = r'```python(.*)```'
     match = re.search(pattern, rsp, re.DOTALL)
-    code_text = match.group(1) if match else rsp
-    return code_text
+    return match.group(1) if match else rsp
 
 class SimpleWriteCode(Action):
 
@@ -37,9 +36,7 @@ class SimpleWriteCode(Action):
 
         rsp = await self._aask(prompt)
 
-        code_text = parse_code(rsp)
-
-        return code_text
+        return parse_code(rsp)
 
 
 class SimpleCoder(Role):
@@ -72,9 +69,7 @@ class SimpleWriteTest(Action):
 
         rsp = await self._aask(prompt)
 
-        code_text = parse_code(rsp)
-
-        return code_text
+        return parse_code(rsp)
 
 
 class SimpleTester(Role):
@@ -97,9 +92,7 @@ class SimpleTester(Role):
         context = self.get_memories() # use all memories as context
 
         code_text = await todo.run(context, k=5) # specify arguments
-        msg = Message(content=code_text, role=self.profile, cause_by=type(todo))
-
-        return msg
+        return Message(content=code_text, role=self.profile, cause_by=type(todo))
 
 
 class SimpleWriteReview(Action):
@@ -116,9 +109,7 @@ class SimpleWriteReview(Action):
 
         prompt = self.PROMPT_TEMPLATE.format(context=context)
 
-        rsp = await self._aask(prompt)
-
-        return rsp
+        return await self._aask(prompt)
 
 
 class SimpleReviewer(Role):

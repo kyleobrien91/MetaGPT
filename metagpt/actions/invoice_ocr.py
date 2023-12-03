@@ -80,8 +80,7 @@ class InvoiceOCR(Action):
     @staticmethod
     async def _ocr(invoice_file_path: Path):
         ocr = PaddleOCR(use_angle_cls=True, lang="ch", page_num=1)
-        ocr_result = ocr.ocr(str(invoice_file_path), cls=True)
-        return ocr_result
+        return ocr.ocr(str(invoice_file_path), cls=True)
 
     async def run(self, file_path: Path, *args, **kwargs) -> list:
         """Execute the action to identify invoice files through OCR.
@@ -145,8 +144,7 @@ class GenerateTable(Action):
             # Extract invoice OCR main information
             prompt = EXTRACT_OCR_MAIN_INFO_PROMPT.format(ocr_result=ocr_result, language=self.language)
             ocr_info = await self._aask(prompt=prompt)
-            invoice_data = OutputParser.extract_struct(ocr_info, dict)
-            if invoice_data:
+            if invoice_data := OutputParser.extract_struct(ocr_info, dict):
                 table_data.append(invoice_data)
 
         # Generate Excel file
@@ -181,6 +179,5 @@ class ReplyQuestion(Action):
             A reply result of string type.
         """
         prompt = REPLY_OCR_QUESTION_PROMPT.format(query=query, ocr_result=ocr_result, language=self.language)
-        resp = await self._aask(prompt=prompt)
-        return resp
+        return await self._aask(prompt=prompt)
 

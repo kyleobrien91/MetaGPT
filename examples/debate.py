@@ -33,11 +33,7 @@ class SpeakAloud(Action):
     async def run(self, context: str, name: str, opponent_name: str):
 
         prompt = self.PROMPT_TEMPLATE.format(context=context, name=name, opponent_name=opponent_name)
-        # logger.info(prompt)
-
-        rsp = await self._aask(prompt)
-
-        return rsp
+        return await self._aask(prompt)
 
 class Debator(Role):
     def __init__(
