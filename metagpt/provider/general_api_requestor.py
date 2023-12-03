@@ -44,19 +44,18 @@ class GeneralAPIRequestor(APIRequestor):
                    )
                    async for line in result.content
                ), True
-        else:
-            try:
-                await result.read()
-            except (aiohttp.ServerTimeoutError, asyncio.TimeoutError) as e:
-                raise TimeoutError("Request timed out") from e
-            except aiohttp.ClientError as exp:
-                logger.warning(f"response: {result.content}, exp: {exp}")
-            return (
-                self._interpret_response_line(
-                    await result.read(),  # let the caller to decode the msg
-                    result.status,
-                    result.headers,
-                    stream=False,
-                ),
-                False,
-            )
+        try:
+            await result.read()
+        except (aiohttp.ServerTimeoutError, asyncio.TimeoutError) as e:
+            raise TimeoutError("Request timed out") from e
+        except aiohttp.ClientError as exp:
+            logger.warning(f"response: {result.content}, exp: {exp}")
+        return (
+            self._interpret_response_line(
+                await result.read(),  # let the caller to decode the msg
+                result.status,
+                result.headers,
+                stream=False,
+            ),
+            False,
+        )

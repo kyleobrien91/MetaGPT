@@ -21,10 +21,7 @@ class ZhiPuModelAPI(ModelAPI):
     @classmethod
     def get_sse_header(cls) -> dict:
         token = cls._generate_token()
-        headers = {
-            "Authorization": token
-        }
-        return headers
+        return {"Authorization": token}
 
     @classmethod
     def split_zhipu_api_url(cls, invoke_type: InvokeType, kwargs):
@@ -42,7 +39,7 @@ class ZhiPuModelAPI(ModelAPI):
     @classmethod
     async def arequest(cls, invoke_type: InvokeType, stream: bool, method: str, headers: dict, kwargs):
         # TODO to make the async request to be more generic for models in http mode.
-        assert method in ["post", "get"]
+        assert method in {"post", "get"}
 
         api_base, url = cls.split_zhipu_api_url(invoke_type, kwargs)
         requester = GeneralAPIRequestor(api_base=api_base)
@@ -61,12 +58,13 @@ class ZhiPuModelAPI(ModelAPI):
     async def ainvoke(cls, **kwargs) -> dict:
         """ async invoke different from raw method `async_invoke` which get the final result by task_id"""
         headers = cls.get_header()
-        resp = await cls.arequest(invoke_type=InvokeType.SYNC,
-                                  stream=False,
-                                  method="post",
-                                  headers=headers,
-                                  kwargs=kwargs)
-        return resp
+        return await cls.arequest(
+            invoke_type=InvokeType.SYNC,
+            stream=False,
+            method="post",
+            headers=headers,
+            kwargs=kwargs,
+        )
 
     @classmethod
     async def asse_invoke(cls, **kwargs) -> AsyncSSEClient:
